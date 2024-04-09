@@ -30,6 +30,9 @@ function sendRequestAndSpeak(inputText) {
         var voices = window.speechSynthesis.getVoices();
         msg.voice = voices.find(voice => voice.name === 'Google US English');
         speechSynthesis.speak(msg);
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
 }
 
