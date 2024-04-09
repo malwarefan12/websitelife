@@ -11,22 +11,10 @@ document.getElementById('speakBtn').addEventListener('click', function() {
         var response = "AI Girlfriend: Response from backend"; // Replace with actual response
 
         // Speak response with a female voice
-        var utterThis = new SpeechSynthesisUtterance(response);
-        utterThis.voice = getFemaleVoice();
-        window.speechSynthesis.speak(utterThis);
+        var msg = new SpeechSynthesisUtterance(response);
+        var voices = window.speechSynthesis.getVoices();
+        msg.voice = voices.find(voice => voice.name === 'Google US English');
+        speechSynthesis.speak(msg);
     };
     recognition.start();
 });
-
-function getFemaleVoice() {
-    var voices = window.speechSynthesis.getVoices();
-    for (var i = 0; i < voices.length; i++) {
-        // Check if the voice is female
-        if (voices[i].name.includes('female')) {
-            return voices[i];
-        }
-    }
-    // If no female voice is found, return the first available voice
-    return voices[0];
-}
-
