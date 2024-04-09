@@ -5,29 +5,29 @@ document.getElementById('speakBtn').addEventListener('click', function() {
         var result = event.results[0][0].transcript;
         document.getElementById('response').textContent = "You: " + result;
         const axios = require('axios');
+        const data = JSON.stringify([
+	{
+		content: result,
+		role: 'user'
+	}
+]);
 
-const options = {
-  method: 'POST',
-  url: 'https://chatgpt-api8.p.rapidapi.com/',
-  headers: {
-    'content-type': 'application/json',
-    'X-RapidAPI-Key': 'b57ce304eemshf36b71e0c03670cp1866b1jsnbafa8589afee',
-    'X-RapidAPI-Host': 'chatgpt-api8.p.rapidapi.com'
-  },
-  data: [
-    {
-      content: result,
-      role: 'system'
-    }
-  ]
-};
+const xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
 
-try {
-	const response = await axios.request(options);
-	console.log(response.data);
-} catch (error) {
-	console.error(error);
-}
+xhr.addEventListener('readystatechange', function () {
+	if (this.readyState === this.DONE) {
+		console.log(this.responseText);
+		this.responseText = response
+	}
+});
+
+xhr.open('POST', 'https://chatgpt-api8.p.rapidapi.com/');
+xhr.setRequestHeader('content-type', 'application/json');
+xhr.setRequestHeader('X-RapidAPI-Key', 'b57ce304eemshf36b71e0c03670cp1866b1jsnbafa8589afee');
+xhr.setRequestHeader('X-RapidAPI-Host', 'chatgpt-api8.p.rapidapi.com');
+
+xhr.send(data);
 
 
         // Speak response with a female voice
