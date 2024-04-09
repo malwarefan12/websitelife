@@ -5,16 +5,38 @@ document.getElementById('speakBtn').addEventListener('click', function() {
         var result = event.results[0][0].transcript;
         document.getElementById('response').textContent = "You: " + result;
 
-        // Send result to backend (you can use AJAX/fetch here)
+        // Define the request data
+var requestData = {
+    tier: "Essential",
+    nsfw: false,
+    question: "i love you", // Replace with your input text
+    history: [{ role: "assistant" }],
+    generateAudio: true,
+    generateImage: false,
+    documentIds: [],
+    temperature: 0.7
+};
 
-        // Receive response from backend
-        var response = "AI Girlfriend: Response from backend"; // Replace with actual response
+// Send the request
+fetch('https://backend-k8s.flowgpt.com/v3/chat-anonymous', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(requestData)
+})
+.then(response => response.json())
+.then(data => {
+    // Extract response text
+    var responseData = data.event === "text" ? data.data : "";
 
-        // Speak response with a female voice
-        var msg = new SpeechSynthesisUtterance(response);
-        var voices = window.speechSynthesis.getVoices();
-        msg.voice = voices.find(voice => voice.name === 'Google US English');
-        speechSynthesis.speak(msg);
+    // Speak the response
+    var msg = new SpeechSynthesisUtterance(responseData);
+    var voices = window.speechSynthesis.getVoices();
+    msg.voice = voices.find(voice => voice.name === 'Google US English');
+    speechSynthesis.speak(msg);
+});
+
     };
     recognition.start();
 });
