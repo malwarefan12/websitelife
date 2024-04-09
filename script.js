@@ -1,67 +1,39 @@
-// Define the function to send a request and speak the response
-function sendRequestAndSpeak(inputText) {
-    // Define the request data
-    var requestData = {
-        tier: "Essential",
-        nsfw: false,
-        question: inputText,
-        history: [{ role: "assistant" }],
-        generateAudio: true,
-        generateImage: false,
-        documentIds: [],
-        temperature: 0.7
+document.getElementById('speakBtn').addEventListener('click', function() {
+    var recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.onresult = function(event) {
+        var result = event.results[0][0].transcript;
+        document.getElementById('response').textContent = "You: " + result;
+
+        // Send user message to Google Chat API
+        var apiUrl = 'https://chat.googleapis.com/v1/spaces/110437447816302729248/messages'; // Replace with your Google Chat API endpoint
+        var apiKey = 'AIzaSyAs8Dsurtqt_fLBSMmz1ISKxOWw9BP2v7o'; // Replace with your API key
+        var data = { message: result }; // Prepare data to send
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', apiUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey); // Include API key in the request headers
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Receive response from Google Chat API
+                    var response = JSON.parse(xhr.responseText).response;
+
+                    // Display response
+                    document.getElementById('response').textContent = "AI Girlfriend: " + response;
+
+                    // Speak response with a female voice
+                    var msg = new SpeechSynthesisUtterance(response);
+                    var voices = window.speechSynthesis.getVoices();
+                    msg.voice = voices.find(voice => voice.name === 'Google US English');
+                    speechSynthesis.speak(msg);
+                } else {
+                    // Handle error
+                    console.error('Error:', xhr.statusText);
+                }
+            }
+        };
+        xhr.send(JSON.stringify(data));
     };
-
-    // Send the request
-    fetch('https://backend-k8s.flowgpt.com/v3/chat-anonymous', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Extract response text
-        var responseData = data.event === "text" ? data.data : "";
-
-        // Speak the response
-        var msg = new SpeechSynthesisUtterance(responseData);
-        var voices = window.speechSynthesis.getVoices();
-        msg.voice = voices.find(voice => voice.name === 'Google US English');
-        speechSynthesis.speak(msg);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-// Define the function to handle user input
-function handleUserInput(userInput) {
-    // Log the user input
-    console.log("You:", userInput);
-
-    // Get response from chatbot
-    var response = chat.respond(userInput);
-    console.log("AI Girlfriend:", response);
-
-    // Speak the response using the function to send request and speak
-    sendRequestAndSpeak(response);
-}
-
-// Initialize SpeechRecognition recognizer
-var recognizer = new (window.webkitSpeechRecognition || window.SpeechRecognition)();
-recognizer.continuous = true;
-recognizer.interimResults = true;
-recognizer.lang = 'en-US';
-
-// Start listening for speech input
-recognizer.onresult = function(event) {
-    var interimTranscript = '';
-    for (var i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-            handleUserInput(event.results[i][0].transcript);
-        }
-    }
-};
-recognizer.start();
+    recognition.start();
+});
