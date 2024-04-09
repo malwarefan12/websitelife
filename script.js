@@ -4,7 +4,6 @@ document.getElementById('speakBtn').addEventListener('click', function() {
     recognition.onresult = function(event) {
         var result = event.results[0][0].transcript;
         document.getElementById('response').textContent = "You: " + result;
-        const axios = require('axios');
         const data = JSON.stringify([
 	{
 		content: result,
