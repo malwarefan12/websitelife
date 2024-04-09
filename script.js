@@ -8,12 +8,25 @@ document.getElementById('speakBtn').addEventListener('click', function() {
         // Send result to backend (you can use AJAX/fetch here)
 
         // Receive response from backend
-        var response = "AI Girlfriend: Response from backend"; // Replace with actual response
+        var response = "Response from backend"; // Replace with actual response
 
-        // Speak response
+        // Speak response with female voice
         var synth = window.speechSynthesis;
         var utterThis = new SpeechSynthesisUtterance(response);
+        utterThis.voice = getFemaleVoice(synth);
         synth.speak(utterThis);
     };
     recognition.start();
 });
+
+// Function to get a female voice
+function getFemaleVoice(synth) {
+    var voices = synth.getVoices();
+    for (var i = 0; i < voices.length; i++) {
+        if (voices[i].name.includes('Female')) {
+            return voices[i];
+        }
+    }
+    // If no female voice found, return the default voice
+    return synth.getVoices()[0];
+}
