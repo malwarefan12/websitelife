@@ -21,10 +21,12 @@ document.getElementById('speakBtn').addEventListener('click', function() {
 function getFemaleVoice() {
     var voices = window.speechSynthesis.getVoices();
     for (var i = 0; i < voices.length; i++) {
-        if (voices[i].name === 'Microsoft Zira Desktop - English (United States)') {
+        // Check if the voice is female
+        if (voices[i].name.includes('female')) {
             return voices[i];
         }
     }
-    // If Zira voice is not found, return the first female voice available
-    return voices.find(voice => voice.name.includes('female'));
+    // If no female voice is found, return the first available voice
+    return voices[0];
 }
+
