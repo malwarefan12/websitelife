@@ -4,30 +4,11 @@ document.getElementById('speakBtn').addEventListener('click', function() {
     recognition.onresult = function(event) {
         var result = event.results[0][0].transcript;
         document.getElementById('response').textContent = "You: " + result;
-        const data = JSON.stringify([
-	{
-		content: result,
-		role: 'user'
-	}
-]);
 
-const xhr = new XMLHttpRequest();
-xhr.withCredentials = true;
+        // Send result to backend (you can use AJAX/fetch here)
 
-xhr.addEventListener('readystatechange', function () {
-	if (this.readyState === this.DONE) {
-		console.log(this.responseText);
-		this.responseText = response
-	}
-});
-
-xhr.open('POST', 'https://chatgpt-api8.p.rapidapi.com/');
-xhr.setRequestHeader('content-type', 'application/json');
-xhr.setRequestHeader('X-RapidAPI-Key', 'b57ce304eemshf36b71e0c03670cp1866b1jsnbafa8589afee');
-xhr.setRequestHeader('X-RapidAPI-Host', 'chatgpt-api8.p.rapidapi.com');
-
-xhr.send(data);
-
+        // Receive response from backend
+        var response = "AI Girlfriend: Response from backend"; // Replace with actual response
 
         // Speak response with a female voice
         var msg = new SpeechSynthesisUtterance(response);
